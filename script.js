@@ -20,10 +20,34 @@ function search() {
             // qui finalmente troviamo il body della risposta...
             showResults(body.data)
         })
+
+    // LocalStorage: getItem per recuperare i dati dal localStorage, setItem per salvare i dati nel localStorage
+
+    // 4. salviamo questa ricerca nell'elenco di ricerche recenti
+
+    // decodifichiamo da stringa ad array la lista di ricerche recenti
+
+    // const recentSearches = JSON.parse(localStorage.getItem("recentSearches")) || []
+    // recentSearches.push(inputValue)
+    // localStorage.setItem("recentSearches", JSON.stringify(recentSearches))
+
+    let recentSearches = JSON.parse(localStorage.getItem('recentSearches')) // ma potrebbe essere null...
+
+    if (recentSearches === null) {
+        recentSearches = [inputValue]
+    } else {
+        recentSearches.push(inputValue)
+    }
+
+    localStorage.setItem("recentSearches", JSON.stringify(recentSearches))
+
+    showRecentSearches(recentSearches)
+
 }
 
 // 3. mostriamo all'utente i risultati della ricerca
 function showResults(results) {
+    console.log(results)
 
     const container = document.querySelector("#searchResultsContainer")
 
@@ -35,12 +59,26 @@ function showResults(results) {
             </a>    
             <div class="card-body">
                 <h5 class="card-title">${result.title}</h5>
-                <span>${result.artist.name}</span>
+                <a href="/artist.html?id=${result.artist.id}">
+                    <span>${result.artist.name}</span>
+                </a>
             </div>
         </div>
         `)
         .join("")
 
+}
+
+function showRecentSearches(recentSearches) {
+    const recentSearchesContainer = document.querySelector("#recent")
+
+    recentSearchesContainer.innerHTML = recentSearches
+        .map(recentSearch => /*html*/`
+        <li class="card bg-transparent">
+            ${recentSearch}
+        </li>
+        `)
+        .join("")
 }
 
 // 4. l'utente può navigare in una pagina di dettaglio che mostra i dettagli di un album
